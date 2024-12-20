@@ -6,7 +6,7 @@ async function buscarConstancias() {
     return;
   }
 
-  const sheetId = "1dma2vRLu997qt7KbfTkj1iN0IDTuemGXfgcv-_DkIHs"; // Cambia esto por tu ID
+  const sheetId = "1a9M2I2lcpy4u7AlRZXMwYRx2AYGwhKLJNeCr8LPu42U"; // Cambia esto por tu ID
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tq=select * where A contains '${curp}'`;
 
   try {
