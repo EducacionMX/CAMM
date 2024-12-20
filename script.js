@@ -7,7 +7,7 @@ async function buscarConstancias() {
   }
 
   const sheetId = "1a9M2I2lcpy4u7AlRZXMwYRx2AYGwhKLJNeCr8LPu42U"; // Cambia esto por tu ID
-const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tq=select * where A contains '${curp}'&range=A2:A17000`;
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tq=select * where A contains '${curp}'`;
 
   try {
     const response = await fetch(url);
@@ -19,7 +19,7 @@ const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tq=select
     const tbody = table.querySelector("tbody");
     tbody.innerHTML = ""; // Limpia los resultados anteriores
 
-    if (rows.length === 0) {
+    if (!rows || rows.length === 0) {
       alert("No se encontraron constancias para el CURP ingresado.");
       return;
     }
@@ -28,9 +28,9 @@ const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tq=select
     rows.forEach(row => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${row.c[1].v}</td> <!-- Columna NOMBRE -->
-        <td>${row.c[3].v}</td> <!-- Columna CURSO/DIPLOMADO -->
-        <td><a href="${row.c[4].v}" target="_blank">Ver Constancia</a></td> <!-- Columna URL -->
+        <td>${row.c[1]?.v || "N/A"}</td> <!-- Columna NOMBRE -->
+        <td>${row.c[3]?.v || "N/A"}</td> <!-- Columna CURSO/DIPLOMADO -->
+        <td><a href="${row.c[4]?.v || "#"}" target="_blank">Ver Constancia</a></td> <!-- Columna URL -->
       `;
       tbody.appendChild(tr);
     });
