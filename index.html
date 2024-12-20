@@ -8,68 +8,42 @@
         text-align: center;
         margin-top: 50px;
       }
-      h1 {
-        color: #333;
-      }
       input {
-        width: 300px;
         padding: 10px;
-        margin: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
+        width: 300px;
       }
       button {
+        padding: 10px 20px;
         background-color: #28a745;
         color: white;
         border: none;
-        padding: 10px 20px;
         cursor: pointer;
-        border-radius: 5px;
-      }
-      button:hover {
-        background-color: #218838;
-      }
-      #results {
-        margin-top: 20px;
-        text-align: left;
-        display: inline-block;
-        width: 80%;
-        margin-left: auto;
-        margin-right: auto;
       }
       table {
-        width: 80%;
         margin: 20px auto;
         border-collapse: collapse;
+        width: 80%;
       }
       th, td {
         border: 1px solid #ddd;
         padding: 8px;
-        text-align: center;
-      }
-      th {
-        background-color: #f4f4f4;
       }
     </style>
   </head>
   <body>
     <h1>Buscador de Constancias</h1>
-    <p>Por favor, ingresa tu CURP para buscar tus constancias:</p>
-    <input type="text" id="text-box-curp" placeholder="Ingresa tu CURP" />
-    <button onclick="buscarRegistros()">Buscar</button>
-    <div id="results">
-      <table id="resultsTable">
-        <thead>
-          <tr>
-            <th>Folio</th>
-            <th>Curso/Diplomado</th>
-            <th>Enlace</th>
-          </tr>
-        </thead>
-        <tbody id="resultsTableBody">
-        </tbody>
-      </table>
-    </div>
+    <input type="text" id="curp" placeholder="Ingresa tu CURP" />
+    <button onclick="buscarConstancias()">Buscar</button>
+    <table id="resultados" style="display:none;">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Curso o Diplomado</th>
+          <th>Folio</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
     <script src="script.js"></script>
   </body>
 </html>
