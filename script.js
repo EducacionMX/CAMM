@@ -15,19 +15,25 @@ async function buscarRegistros() {
 
   const spreadsheetId = "1a9M2I2lcpy4u7AlRZXMwYRx2AYGwhKLJNeCr8LPu42U";
   const sheetName = "Registros";
-  const apiKey = "AIzaSyDpkQMBeixLKEeowKZi16i5kzy2mQV7im8"; // Coloca tu clave de la API de Google
+  const apiKey = "AIzaSyDpkQMBeixLKEeowKZi16i5kzy2mQV7im8";
 
   // URL de Google Sheets API
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetName}?key=${apiKey}`;
+  console.log("URL de la API:", url);
 
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error("Error al obtener los datos.");
     const data = await response.json();
 
+    console.log("Datos recibidos:", data);
+
     // Filtrar registros que coincidan con el CURP
     const rows = data.values || [];
+    console.log("Filas obtenidas:", rows);
+
     const results = rows.filter(row => row[0] === curp);
+    console.log("Resultados filtrados:", results);
 
     const tableBody = document.getElementById("resultsTableBody");
     tableBody.innerHTML = ""; // Limpiar resultados anteriores
