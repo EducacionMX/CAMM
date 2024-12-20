@@ -1,40 +1,43 @@
-function buscarRegistros(){
-    const numeroInventario = document.getElementById("text-box-numero-inventario").value;
-    console.log("CURP ingresado:", numeroInventario); // Depuración
+async function buscarConstancias() {
+  const curp = document.getElementById("curp").value.trim();
+  
+  if (!curp) {
+    alert("Por favor, ingresa un CURP válido.");
+    return;
+  }
 
-    google.script.run
-    .withSuccessHandler(info => {
-        console.log("Resultados devueltos:", info); // Depuración
-        let tableBody = document.getElementById("mantenimientosTableBody");
-        tableBody.innerHTML = "";
-        if(info.length > 0){
-            info.forEach(mantenimiento => {
-                const template = document.getElementById("mantenimientosRow");
-                const templateRow = template.content;
+  const sheetId = "1dma2vRLu997qt7KbfTkj1iN0IDTuemGXfgcv-_DkIHs"; // Cambia esto por tu ID
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tq=select * where A contains '${CURP}'`;
 
-                let tr = templateRow.cloneNode(true);
-                let colFecha = tr.querySelector(".mantenimientosFecha");
-                let colDescripcion = tr.querySelector(".mantenimientosDescripcion");
-                let colAtendido = tr.querySelector(".mantenimientosAtendio");
+  try {
+    const response = await fetch(url);
+    const text = await response.text();
+    const json = JSON.parse(text.substring(47).slice(0, -2)); // Extraer datos JSON
+    const rows = json.table.rows;
 
-                colFecha.textContent = mantenimiento[2];
-                colDescripcion.textContent = mantenimiento[3];
+    const table = document.getElementById("resultados");
+    const tbody = table.querySelector("tbody");
+    tbody.innerHTML = ""; // Limpia los resultados anteriores
 
-                if (mantenimiento[4] && mantenimiento[4].startsWith("http")) {
-                    let enlace = document.createElement("a");
-                    enlace.href = mantenimiento[4];
-                    enlace.textContent = "Ver enlace";
-                    enlace.target = "_blank";
-                    colAtendido.appendChild(enlace);
-                } else {
-                    colAtendido.textContent = mantenimiento[4];
-                }
+    if (rows.length === 0) {
+      alert("No se encontraron constancias para el CURP ingresado.");
+      return;
+    }
 
-                tableBody.appendChild(tr);
-            });
-        } else {
-            alert("No se encontraron registros.");
-        }
-    })
-    .buscarMantenimientos(numeroInventario);
+    // Recorremos cada fila encontrada y la agregamos a la tabla
+    rows.forEach(row => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row.c[1].v}</td> <!-- Columna NOMBRE -->
+        <td>${row.c[3].v}</td> <!-- Columna CURSO/DIPLOMADO -->
+        <td><a href="${row.c[4].v}" target="_blank">Ver Constancia</a></td> <!-- Columna URL -->
+      `;
+      tbody.appendChild(tr);
+    });
+
+    table.style.display = "table"; // Muestra la tabla
+  } catch (error) {
+    console.error("Error al obtener los datos:", error);
+    alert("Hubo un error al buscar las constancias.");
+  }
 }
