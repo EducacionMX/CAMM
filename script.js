@@ -1,58 +1,40 @@
-async function buscarRegistros() {
-  const curp = document.getElementById("text-box-curp").value.trim().toUpperCase();
+function buscarRegistros(){
+    const numeroInventario = document.getElementById("text-box-numero-inventario").value;
+    console.log("CURP ingresado:", numeroInventario); // Depuración
 
-  // Validar CURP ingresado
-  if (!curp) {
-    alert("Por favor, ingresa un CURP válido.");
-    return;
-  }
+    google.script.run
+    .withSuccessHandler(info => {
+        console.log("Resultados devueltos:", info); // Depuración
+        let tableBody = document.getElementById("mantenimientosTableBody");
+        tableBody.innerHTML = "";
+        if(info.length > 0){
+            info.forEach(mantenimiento => {
+                const template = document.getElementById("mantenimientosRow");
+                const templateRow = template.content;
 
-  const curpPattern = /^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z\d]{2}$/i;
-  if (!curpPattern.test(curp)) {
-    alert("Por favor, ingresa un CURP válido en formato correcto.");
-    return;
-  }
+                let tr = templateRow.cloneNode(true);
+                let colFecha = tr.querySelector(".mantenimientosFecha");
+                let colDescripcion = tr.querySelector(".mantenimientosDescripcion");
+                let colAtendido = tr.querySelector(".mantenimientosAtendio");
 
-  const spreadsheetId = "1a9M2I2lcpy4u7AlRZXMwYRx2AYGwhKLJNeCr8LPu42U";
-  const sheetName = "Registros";
-  const apiKey = "AIzaSyDpkQMBeixLKEeowKZi16i5kzy2mQV7im8";
+                colFecha.textContent = mantenimiento[2];
+                colDescripcion.textContent = mantenimiento[3];
 
-  // URL de Google Sheets API
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetName}?key=${apiKey}`;
-  console.log("URL de la API:", url);
+                if (mantenimiento[4] && mantenimiento[4].startsWith("http")) {
+                    let enlace = document.createElement("a");
+                    enlace.href = mantenimiento[4];
+                    enlace.textContent = "Ver enlace";
+                    enlace.target = "_blank";
+                    colAtendido.appendChild(enlace);
+                } else {
+                    colAtendido.textContent = mantenimiento[4];
+                }
 
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("Error al obtener los datos.");
-    const data = await response.json();
-
-    console.log("Datos recibidos:", data);
-
-    // Filtrar registros que coincidan con el CURP
-    const rows = data.values || [];
-    console.log("Filas obtenidas:", rows);
-
-    const results = rows.filter(row => row[0] === curp);
-    console.log("Resultados filtrados:", results);
-
-    const tableBody = document.getElementById("resultsTableBody");
-    tableBody.innerHTML = ""; // Limpiar resultados anteriores
-
-    if (results.length === 0) {
-      tableBody.innerHTML = `<tr><td colspan="3">No se encontraron constancias para el CURP ingresado.</td></tr>`;
-    } else {
-      results.forEach(row => {
-        const rowHtml = `
-          <tr>
-            <td>${row[2]}</td> <!-- Folio -->
-            <td>${row[3]}</td> <!-- Curso/Diplomado -->
-            <td><a href="${row[4]}" target="_blank">Ver constancia</a></td> <!-- URL -->
-          </tr>`;
-        tableBody.innerHTML += rowHtml;
-      });
-    }
-  } catch (error) {
-    console.error("Error al buscar constancias:", error);
-    alert("Ocurrió un error al buscar las constancias. Inténtalo de nuevo.");
-  }
+                tableBody.appendChild(tr);
+            });
+        } else {
+            alert("No se encontraron registros.");
+        }
+    })
+    .buscarMantenimientos(numeroInventario);
 }
