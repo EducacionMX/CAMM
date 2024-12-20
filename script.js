@@ -7,7 +7,7 @@ async function buscarConstancias() {
   }
 
   const sheetId = "1a9M2I2lcpy4u7AlRZXMwYRx2AYGwhKLJNeCr8LPu42U"; // Cambia esto por tu ID
-  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tq=select * where A contains '${curp}'`;
+const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tq=select * where A contains '${curp}'&range=A2:A17000`;
 
   try {
     const response = await fetch(url);
