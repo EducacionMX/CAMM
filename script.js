@@ -14,8 +14,8 @@ async function buscarRegistros() {
   }
 
   const spreadsheetId = "1a9M2I2lcpy4u7AlRZXMwYRx2AYGwhKLJNeCr8LPu42U";
-  const sheetName = "Hoja1";
-  const apiKey = "TU_CLAVE_API_AQUI"; // Coloca tu clave de la API de Google
+  const sheetName = "Registros";
+  const apiKey = "AIzaSyDpkQMBeixLKEeowKZi16i5kzy2mQV7im8"; // Coloca tu clave de la API de Google
 
   // URL de Google Sheets API
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetName}?key=${apiKey}`;
