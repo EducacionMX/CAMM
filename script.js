@@ -26,11 +26,16 @@ async function buscarConstancias() {
 
     // Recorremos cada fila encontrada y la agregamos a la tabla
     rows.forEach(row => {
+      // Validamos que cada columna exista antes de acceder a .v
+      const nombre = row.c[1]?.v || "N/A"; // Columna NOMBRE
+      const curso = row.c[3]?.v || "N/A"; // Columna CURSO/DIPLOMADO
+      const urlConstancia = row.c[4]?.v || "#"; // Columna URL
+
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${row.c[1]?.v || "N/A"}</td> <!-- Columna NOMBRE -->
-        <td>${row.c[3]?.v || "N/A"}</td> <!-- Columna CURSO/DIPLOMADO -->
-        <td><a href="${row.c[4]?.v || "#"}" target="_blank">Ver Constancia</a></td> <!-- Columna URL -->
+        <td>${nombre}</td>
+        <td>${curso}</td>
+        <td><a href="${urlConstancia}" target="_blank">Ver Constancia</a></td>
       `;
       tbody.appendChild(tr);
     });
