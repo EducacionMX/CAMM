@@ -24,16 +24,27 @@ async function buscarConstancias() {
       return;
     }
 
-    // Recorremos cada fila encontrada y verificamos cada columna antes de usarla
+    // Recorremos cada fila encontrada con validaciones más detalladas
     rows.forEach((row, index) => {
-      // Depuración: Registro de cada fila y sus columnas
+      // Depuración: Registro de cada fila
       console.log(`Procesando fila ${index + 1}:`, row);
-      console.log("Columnas disponibles:", row.c);
+
+      if (!row.c) {
+        console.warn(`Fila ${index + 1} no tiene datos válidos:`, row);
+        return; // Saltar filas sin datos
+      }
 
       // Validar y asignar valores de las columnas
-      const nombre = (row.c && row.c[1] && row.c[1].v) ? row.c[1].v : "N/A";
-      const curso = (row.c && row.c[3] && row.c[3].v) ? row.c[3].v : "N/A";
-      const urlConstancia = (row.c && row.c[4] && row.c[4].v) ? row.c[4].v : "#";
+      const nombre = row.c[1]?.v || "N/A"; // Columna NOMBRE
+      const curso = row.c[3]?.v || "N/A"; // Columna CURSO/DIPLOMADO
+      const urlConstancia = row.c[4]?.v || "#"; // Columna URL
+
+      if (!row.c[1] || !row.c[3] || !row.c[4]) {
+        console.warn(
+          `Fila ${index + 1} tiene columnas incompletas. Datos:`,
+          row.c
+        );
+      }
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
