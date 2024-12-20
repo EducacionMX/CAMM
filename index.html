@@ -1,51 +1,121 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>CAMM - Buscador de Constancias</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 50px;
-    }
-    input {
-      padding: 10px;
-      width: 300px;
-      margin-bottom: 20px;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    table {
-      margin: 20px auto;
-      border-collapse: collapse;
-      width: 80%;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-    }
-  </style>
-</head>
-<body>
-  <h1>Buscador de Constancias</h1>
-  <input type="text" id="curp" placeholder="Ingresa tu CURP" />
-  <button onclick="buscarConstancias()">Buscar</button>
-  <table id="resultados" style="display:none;">
-    <thead>
+  <head>
+    <base target="_top">
+    <link 
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" 
+      rel="stylesheet" 
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" 
+      crossorigin="anonymous">
+    <title>Buscador de Constancias</title>
+    <div class="container text-center mt-5">
+      <h1 class="display-4">CAMM</h1>
+      <h2 class="mt-3">Buscador de Constancias Cursos/Diplomados</h2>
+    </div>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <!-- Entrada de CURP -->
+      <div class="row d-flex justify-content-center mb-3">
+        <div class="col-3">
+          <input type="text" class="form-control" id="text-box-curp" placeholder="ESCRIBE TU CURP">
+        </div>
+        <div class="col-3">
+          <button type="submit" class="btn btn-primary" onclick="buscarRegistros()">Buscar</button>
+        </div>
+      </div>
+
+      <!-- Resultados del CURP -->
+      <div class="row d-flex justify-content-evenly mb-3">
+        <div class="col-3">
+            <input type="text" class="form-control" id="curp" placeholder="CURP" readonly>
+        </div>
+        <div class="col-3">
+            <input type="text" class="form-control" id="nombre" placeholder="Nombre completo" readonly>
+        </div>
+      </div>
+
+      <!-- Tabla de resultados -->
+      <table id="mantenimientosTable" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Folio</th>
+            <th>Curso/Diplomado</th>
+            <th>Enlace</th>
+          </tr>
+        </thead>
+        <tbody id="mantenimientosTableBody">
+          <!-- Aquí se insertará el template -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Template para filas de la tabla -->
+    <template id="mantenimientosRow">
       <tr>
-        <th>Nombre</th>
-        <th>Curso o Diplomado</th>
-        <th>Enlace</th>
+        <td class="mantenimientosFolio"></td>
+        <td class="mantenimientosCurso"></td>
+        <td class="mantenimientosEnlace"></td>
       </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <script src="script.js"></script>
-</body>
+    </template>
+
+    <!-- Bootstrap JS -->
+    <script 
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" 
+      crossorigin="anonymous">
+    </script>
+
+    <!-- Script principal -->
+    <script>
+      function buscarRegistros(){
+        const curp = document.getElementById("text-box-curp").value.trim().toUpperCase();
+
+        // Validar CURP
+        const curpPattern = /^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z\d]{2}$/i;
+        if (!curpPattern.test(curp)) {
+          alert("Por favor, ingresa un CURP válido en formato correcto.");
+          return;
+        }
+
+        google.script.run
+          .withSuccessHandler(info => {
+            let tableBody = document.getElementById("mantenimientosTableBody");
+            tableBody.innerHTML = "";
+            if(info.length > 0){
+              document.getElementById("curp").value = info[0][0];
+              document.getElementById("nombre").value = info[0][1];
+
+              info.forEach(mantenimiento => {
+                const template = document.getElementById("mantenimientosRow");
+                const templateRow = template.content;
+
+                let tr = templateRow.cloneNode(true);
+                let colFolio = tr.querySelector(".mantenimientosFolio");
+                let colCurso = tr.querySelector(".mantenimientosCurso");
+                let colEnlace = tr.querySelector(".mantenimientosEnlace");
+
+                colFolio.textContent = mantenimiento[2];
+                colCurso.textContent = mantenimiento[3];
+
+                if (mantenimiento[4] && mantenimiento[4].startsWith("http")) {
+                  let enlace = document.createElement("a");
+                  enlace.href = mantenimiento[4];
+                  enlace.textContent = "Ver enlace";
+                  enlace.target = "_blank";
+                  colEnlace.appendChild(enlace);
+                } else {
+                  colEnlace.textContent = mantenimiento[4];
+                }
+
+                tableBody.appendChild(tr);
+              });
+            } else {
+              alert("No se encontraron registros.");
+            }
+          })
+          .buscarMantenimientos(curp);
+      }
+    </script>
+  </body>
 </html>
