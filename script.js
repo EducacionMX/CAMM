@@ -24,12 +24,16 @@ async function buscarConstancias() {
       return;
     }
 
-    // Recorremos cada fila encontrada y la agregamos a la tabla
-    rows.forEach(row => {
-      // Validamos que cada columna exista antes de acceder a .v
-      const nombre = row.c[1]?.v || "N/A"; // Columna NOMBRE
-      const curso = row.c[3]?.v || "N/A"; // Columna CURSO/DIPLOMADO
-      const urlConstancia = row.c[4]?.v || "#"; // Columna URL
+    // Recorremos cada fila encontrada y verificamos cada columna antes de usarla
+    rows.forEach((row, index) => {
+      // Depuración: Registro de cada fila y sus columnas
+      console.log(`Procesando fila ${index + 1}:`, row);
+      console.log("Columnas disponibles:", row.c);
+
+      // Validar y asignar valores de las columnas
+      const nombre = (row.c && row.c[1] && row.c[1].v) ? row.c[1].v : "N/A";
+      const curso = (row.c && row.c[3] && row.c[3].v) ? row.c[3].v : "N/A";
+      const urlConstancia = (row.c && row.c[4] && row.c[4].v) ? row.c[4].v : "#";
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
