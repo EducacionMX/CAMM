@@ -1,0 +1,13 @@
+backend:
+  name: git-gateway
+  branch: main # Cambia "main" por la rama que estés usando.
+media_folder: static/img
+public_folder: /img
+collections:
+  - name: "pages"
+    label: "Pages"
+    folder: "_data"
+    create: true
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Body", name: "body", widget: "markdown" }
